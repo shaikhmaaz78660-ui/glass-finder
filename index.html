@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glass compatibility finder</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5f8f5c">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{
+    --cream:#f4efe6;
+    --cream-2:#ffffff;
+    --line:#e4dccd;
+    --ink:#231f1a;
+    --ink-soft:#6f6a5f;
+    --green:#5f8f5c;
+    --green-dark:#476b45;
+    --green-tint:#e8f0e4;
+    --clay:#c96f4a;
+    --clay-tint:#f7e4da;
+    --danger:#c65b5b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    padding:2.5rem 1.25rem 4rem;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+
+  header{
+    background:var(--cream-2);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:2rem 1.75rem;
+    margin-bottom:1.75rem;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-glow{
+    position:absolute;
+    top:-50px;
+    right:-50px;
+    width:180px;
+    height:180px;
+    background:var(--green-tint);
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .hero-shard{
+    position:absolute;
+    top:18px;
+    right:26px;
+    width:68px;
+    height:68px;
+    opacity:0.85;
+  }
+  .eyebrow{
+    display:inline-block;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--green-dark);
+    background:var(--green-tint);
+    padding:5px 14px;
+    border-radius:999px;
+    margin:0 0 16px;
+    position:relative;
+    z-index:1;
+  }
+  h1{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-weight:800;
+    font-size:34px;
+    margin:0 0 10px;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+    line-height:1.05;
+    position:relative;
+    z-index:1;
+    max-width:82%;
+  }
+  .sub{color:var(--ink-soft);font-size:14px;margin:0;line-height:1.5;position:relative;z-index:1;max-width:82%;}
+
+  .search-label{
+    display:block;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-weight:700;
+    font-size:13px;
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+  .search-box{position:relative;margin-bottom:0.75rem;}
+  .search-box input{
+    width:100%;
+    background:var(--cream-2);
+    border:1.5px solid var(--line);
+    border-radius:999px;
+    padding:15px 22px;
+    font-size:16px;
+    font-weight:500;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    outline:none;
+  }
+  .search-box input:focus{border-color:var(--green);}
+  .search-box input::placeholder{color:#a89f8e;font-weight:400;}
+
+  .search-hint{font-size:12px;color:var(--ink-soft);margin:10px 0 1.5rem 4px;}
+
+  .results{margin-bottom:2.5rem;min-height:20px;}
+
+  .answer-card{
+    position:relative;
+    background:var(--green);
+    border-radius:18px;
+    padding:1.25rem 1.5rem;
+    margin-bottom:14px;
+  }
+  .answer-card .spark{
+    position:absolute;
+    top:14px;
+    right:16px;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-size:11px;
+    font-weight:700;
+    background:rgba(255,255,255,0.25);
+    color:#fff;
+    padding:4px 11px;
+    border-radius:999px;
+  }
+  .answer-label{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-size:12px;
+    font-weight:700;
+    color:#eaf3e8;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin:0 0 6px;
+  }
+  .answer-main{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-size:24px;
+    font-weight:800;
+    color:#fff;
+    margin:0;
+    line-height:1.3;
+  }
+  .answer-main b{color:#fff2c9;}
+
+  .result-card{
+    background:var(--cream-2);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:1.1rem 1.25rem;
+    margin-bottom:12px;
+  }
+  .result-card .match-label{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-size:12px;
+    font-weight:700;
+    color:var(--clay);
+    margin:0 0 10px;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    background:var(--clay-tint);
+    color:#8a4325;
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    font-size:13px;
+    font-weight:600;
+    padding:6px 13px;
+    border-radius:999px;
+  }
+  .chip.self{
+    background:var(--green);
+    color:#fff;
+    font-weight:700;
+  }
+  .glass-meta{margin-top:10px;font-size:13px;color:var(--ink-soft);}
+  .empty-state{color:var(--ink-soft);font-size:14px;padding:1.5rem 0;text-align:center;}
+  .no-match{
+    color:var(--ink);
+    font-size:14px;
+    font-weight:500;
+    padding:1rem 1.25rem;
+    background:var(--cream-2);
+    border:1.5px dashed var(--line);
+    border-radius:16px;
+  }
+
+  .section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:12px;
+    padding-top:1.75rem;
+    border-top:1px solid var(--line);
+  }
+  .section-head h2{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
+    margin:0;
+  }
+  button{
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+    border-radius:999px;
+    border:1.5px solid var(--line);
+    background:var(--cream-2);
+    color:var(--ink);
+    padding:8px 16px;
+  }
+  button:hover{background:var(--cream);}
+  .btn-accent{
+    background:var(--green);
+    color:#fff;
+    border-color:var(--green);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-weight:700;
+  }
+  .btn-accent:hover{background:var(--green-dark);}
+
+  .group-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .group-row:last-child{border-bottom:none;}
+  .group-models{font-size:13px;color:var(--ink);line-height:1.6;}
+  .group-models b{font-weight:700;}
+  .group-base{
+    display:inline-block;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-size:11px;
+    font-weight:700;
+    color:#fff;
+    background:var(--clay);
+    padding:3px 10px;
+    border-radius:999px;
+    margin-bottom:6px;
+  }
+  .group-glass{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .row-actions{display:flex;gap:6px;flex-shrink:0;}
+  .row-actions button{padding:6px 12px;font-size:12px;}
+
+  .form-panel{
+    background:var(--cream-2);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:1.25rem;
+    margin-top:14px;
+  }
+  .form-panel label{
+    display:block;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-size:12px;
+    font-weight:700;
+    color:var(--green-dark);
+    margin:0 0 6px;
+  }
+  .form-panel textarea, .form-panel input[type=text]{
+    width:100%;
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    font-size:14px;
+    outline:none;
+    margin-bottom:14px;
+    resize:vertical;
+  }
+  .form-panel textarea:focus, .form-panel input[type=text]:focus{border-color:var(--green);}
+  .form-hint{font-size:11px;color:var(--ink-soft);margin:-10px 0 14px;}
+  .form-actions{display:flex;gap:8px;justify-content:flex-end;}
+
+  .toast{
+    position:fixed;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--ink);
+    color:#fff;
+    padding:10px 18px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:600;
+    opacity:0;
+    transition:opacity 0.25s;
+    pointer-events:none;
+  }
+  .toast.show{opacity:1;}
+
+</style>
+</head>
+<body>
+<div class="wrap" id="mainApp">
+  <header>
+    <div class="hero-glow"></div>
+    <svg class="hero-shard" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="50,5 90,35 75,90 25,90 10,35" fill="none" stroke="#e0c3ff" stroke-width="2" opacity="0.55"/>
+      <polygon points="50,5 65,45 50,60 35,45" fill="#a855f7" opacity="0.35"/>
+      <line x1="50" y1="5" x2="50" y2="60" stroke="#f3e8ff" stroke-width="1" opacity="0.5"/>
+      <line x1="10" y1="35" x2="50" y2="60" stroke="#f3e8ff" stroke-width="1" opacity="0.4"/>
+      <line x1="90" y1="35" x2="50" y2="60" stroke="#f3e8ff" stroke-width="1" opacity="0.4"/>
+      <circle cx="50" cy="30" r="3" fill="#fff2a8"/>
+    </svg>
+    <span class="eyebrow">Shop tool</span>
+    <h1>Glass compatibility finder</h1>
+    <p class="sub">Type a phone model — get told exactly which glass to grab.</p>
+  </header>
+
+  <label class="search-label" for="searchInput">Search a glass model</label>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="e.g. A77, Narzo 10, iPhone 12..." autocomplete="off">
+  </div>
+  <p class="search-hint">Type the exact model code (e.g. A77, Y76 5G) — at least 2 characters. This avoids mixing up similar codes across brands.</p>
+
+  <div class="results" id="results"></div>
+
+  <div class="section-head">
+    <h2>All compatibility groups (<span id="groupCount">0</span>)</h2>
+<button class="btn-accent" id="addBtn">+ Add group</button>
+  </div>
+  <div id="groupList"></div>
+  <div id="formPanel"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+let groups = [];
+let editingId = null;
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+const SEED_GROUPS = [
+  {
+    id: 'g_seed_2',
+    baseModel: 'Box 1',
+    models: ['Realme 5','5I','5S','C3','C11','C12','C15','C20','C21','C21Y','C25','C255','C25S','C30','C30S','V30','C31','C33','C35','10 5G','10T','NARZO 10','10A','20','20A','30A','50A','50i','50A PRIME','OP A2','A2M','A2X','A8','A15','A15S','A16','A16S','A16K','A16E','A17','A17K','A18','A31','A5 2020','A9 2020','A35 2021','A38','A53S','A54S 5G','A55 2021','A55S','A56','A57 5G','A57E','A57S','A58 5G','A59 5G','A77','A77S','A78 5G','A11X','K10 5G','Vi Y20','Y20i','Y20T','Y20S','Y21E','Y22','Y22S','Y32','Y33','Y33S','Y33E','Y35','Y51A','Y52','Y52S','Y52T','Y74','Y75S','Y76 5G','Y76S','Y11S','Y11 2023','Y12S','Y17S','Y01','Y02S','Y02A','Y02T','T2X','Y51 2020','Y31S','Y31 2021','Y53S','Y72 5G','T1','T1S','T1X','IQOO Z3','SAM A13','A13 5G','M13','F13','A23 5G','F23 5G','M23','M33','F12','M12','M02','F02S','A32 5G','VISION 2S','INFI HOT 10i','HOT 11','30i','SMART 6','5 PRO','SPARK 4','6 GO','7','8','8P','8T','GO 2020','POP 5 PRO','5 LITE','KC 8','X657','RMi A1','A1+','A2 2023','A2+','10 PRIME+','NOTE 11E','MT G8 POWER LITE','G9','G10 POWER','G20','HW HONOR X5+','X6 5G','X8 5G','NOVA Y61','Mi POCO M4 5G','RMi 10X PRO 5G','11 PRIME','TEC POP 6 PRO','7 PRO','SPARK 8i','8C','9','9T','9 PRO','10C','GO 2022','GO 2023','KH6','HOT 12i','20i','SMART 7','ITEL S17','A58','A58 PRO','A49'],
+    glassType: 'G-Tel 11D',
+    notes: 'From official G-Tel 11D packaging (Image 2)'
+  },
+  {
+    id: 'g_seed_2b',
+    baseModel: 'Box 2',
+    models: ["Realme C55", "Narzo N55", "60X", "11 5G", "OP A1", "A98", "T23", "K11X", "A58 4G", "A79 5G", "12 5G", "Realme C67", "C65", "12X", "12 Lite", "Y58", "Narzo 70X", "H65 5G", "iQOO Z9X", "OP A60", "A3 Pro (India)", "K12X", "K12 5G", "OP A3X", "Y38", "Vi T3X", "A80", "A3", "Realme 13 5G", "14X 5G", "C63 5G", "C75", "Vi Y29", "T4X", "Y200I", "Y19S", "Realme V60 Pro", "Narzo 80X 5G", "X5X", "Y39 5G", "C73 5G", "Vi iQOO Z10X", "Y19S Pro", "OP A5 4G", "OP A5 5G", "A5 Pro 4G", "Narzo 80 Lite", "OP A5X 4G", "OP A5X 5G", "K13X"],
+    glassType: '',
+    notes: 'From uploaded glass packaging photo (Image 1)'
+  },
+  {
+    id: 'g_seed_3',
+    baseModel: 'Box 3',
+    models: ["Redmi Note 9 Pro", "Note 9 Pro Max", "Note 9S", "Note 10 Pro", "Note 10 Pro Max", "Note 10 Lite", "Note 11 Pro", "Note 11S 5G", "Note 11 Pro 5G", "Note 11 Pro Max", "Note 11 Pro+ 5G", "Note 11T Pro", "Note 11T Pro+", "K30", "K30 Pro", "K40", "K40 Pro", "K50", "K50i", "Xiaomi 10i", "10T 5G", "10T Pro", "11i", "11T", "11T Pro", "11X", "11X Pro", "12 Pro", "Poco F3", "Poco F4", "Poco F4 GT", "Poco M2 Pro", "Poco X2", "Poco X3", "Poco X3 GT", "Poco X3 NFC", "Poco X3 Pro", "Poco X4 GT", "Poco X4 Pro 5G", "Tecno Camon 12 Air", "Camon 15 Air", "Camon 18 Premier", "Spark 9T", "Samsung A71", "A72", "A72 5G", "A73 5G", "A80", "A90", "C55 5G", "F52 5G", "F54", "F55 5G", "F62", "M51", "M52 5G", "M53", "M54", "M55 5G", "M55S", "M62", "OP A36", "A55", "A73 5G", "A76", "A96", "K10", "K9S", "K13", "Reno4 Z", "Reno 13F", "Vivo iQOO Neo6", "iQOO Z5", "Y27S", "Y36 4G", "Y36 5G", "Y77T", "Y78 (China)", "Y100i 5G", "T1", "T3 5G", "Y200E", "Y200 GT 5G", "Y300", "iQOO 12 5G", "Neo9 5G", "Neo9 Pro 5G", "Neo9S Pro 5G", "Neo9S Pro+ 5G", "Neo10", "Neo10 Pro", "Z9 5G", "Z9 Turbo 5G", "1+Ace Pro", "1+Nord 3", "1+Nord CE3", "1+Nord CE4 Lite", "Moto G22", "Infinix Smart 10 HD"],
+    glassType: '',
+    notes: 'From ESD Anti-Static Super Curve packaging'
+  },
+  {
+    id: 'g_seed_4',
+    baseModel: 'Box 4',
+    models: ["Redmi 12", "Redmi 13", "Note 12R", "Xiaomi Poco M6 Pro", "Infinix Hot 11S", "Hot 20S", "Hot 30", "Hot 40", "Zero 5G", "Zero X Neo", "Note 30", "X6821", "X6833B", "Tecno Pova 5", "Pova 6 Neo", "Camon 17 Pro", "Camon 17 Prime", "Camon 18", "Camon 18P", "Camon 18T", "Camon 19", "Camon 19 Neo", "Camon 19 Pro", "CH6i", "CI6N", "Spark 8 Pro", "Spark 10 Pro"],
+    glassType: '',
+    notes: 'From glass packaging photo'
+  },
+  {
+    id: 'g_seed_5',
+    baseModel: 'Box 5',
+    models: ["Poco F3 GT (5G)", "Poco F4 GT (5G)", "K50 Gaming (5G)", "Poco X5 Pro", "Redmi K40 Gaming (5G)", "Poco F5", "K40 Gaming Edition", "K50 Gaming Edition", "Camon 20", "Redmi Note 12 Pro (5G)", "Note 12 Pro+", "Camon 20 Pro", "Note 12 Explorer", "Note 12 Turbo", "Redmi Note 13 (5G)", "Note 13 Pro (4G)", "Redmi Note 13R Pro", "K50G", "Poco M6 Pro (4G)", "Infinix Note 30 VIP", "Infinix GT 40 Pro", "Infinix Note 30 Pro", "Poco X6 Neo"],
+    glassType: '',
+    notes: 'From ESD Anti-Static Big Curved Edge packaging'
+  },
+  {
+    id: 'g_seed_6',
+    baseModel: 'Box 6',
+    models: ["Redmi 10A", "10X 5G", "9A", "9C", "9i", "K23", "Xiaomi Poco C3", "C31", "M5", "Samsung A12", "A02S", "A03", "A03S", "A03 Core", "A04", "A04S", "F04", "M04", "A04 Core", "M02S", "A23 4G", "A02S", "A03", "A03S", "Vi Y16"],
+    glassType: '',
+    notes: 'From glass packaging photo'
+  },
+  {
+    id: 'g_seed_7',
+    baseModel: 'Box 7',
+    models: ["Realme 13", "Realme 12 4G", "OP F27", "F25 Pro", "1+Nord CE4 Lite", "1+Nord 4", "Realme 12+", "V30 Lite 4G", "1+Nord CE4", "Y200E", "Y100 4G", "OP K12", "Realme P1", "T3", "1+Ace 3V", "1+Nord 3", "Narzo 70", "Narzo 70 Pro", "Realme GT 5", "Z9", "Honor 90 Lite", "Reno 12F"],
+    glassType: '',
+    notes: 'From 9H glass packaging'
+  },
+  {
+    id: 'g_seed_8',
+    baseModel: 'Box 8',
+    models: ["OP F19", "F19S", "F19 Pro", "F19 Pro+ (5G)", "F21 Pro (4G)", "F21 Pro (5G)", "F21S Pro (4G)", "F21S Pro (5G)", "A74 (4G)", "A78 (4G)", "A93 (4G)", "A94 (4G)", "A94 (5G)", "A95 (4G)", "A95 (5G)", "Realme 7 Pro", "X7", "V15 (5G)", "Q2 Pro", "Realme 8", "Realme 8 Pro", "9 Pro+", "Realme 9 (4G)", "Realme 10 (4G)", "Realme 11 (4G)", "Reno 8 (4G)", "Reno 8 (5G)", "Reno 8 Lite", "Reno 8T (4G)", "Reno 8Z", "Reno 7 (4G)", "Reno 7 (5G)", "Reno 7 SE (5G)", "Reno 7Z (5G)", "Reno 7 Lite", "Reno 6Z", "Reno 6 Lite", "Reno 5 Lite", "Reno 4 Lite", "Reno 5Z", "Reno 5F", "Reno 4SE", "Reno 4F", "Reno 4 (4G)", "Reno 4 (5G)", "Reno 2", "F17 Pro", "1+Nord CE2", "Find X5 Lite (5G)", "Narzo 50 Pro (5G)", "Narzo 60", "A96 (5G) China"],
+    glassType: '',
+    notes: 'From Anti-Static packaging'
+  },
+  {
+    id: 'g_seed_9',
+    baseModel: 'Box 9',
+    models: ["Realme C65", "C67 5G", "11 5G", "11X 5G", "12 5G", "12X 5G", "Narzo 70X", "N65", "OP A1 5G", "A3 Pro 5G", "A58 4G", "A60", "A79 5G", "Vi Y58 5G", "Y37 Pro", "Y38", "Y200T", "T3X 5G", "1+Nord N30", "N30SE"],
+    glassType: '',
+    notes: 'From glass packaging photo'
+  },
+  {
+    id: 'g_seed_10',
+    baseModel: 'Box 10',
+    models: ["OP Realme 6", "Realme 6S", "Realme 7 5G", "Realme 7 (Asia)", "Realme 7 (Global)", "X7 Pro", "Realme Narzo 20 Pro", "Narzo 30 5G", "Narzo 30 Pro 5G", "OP A52 4G", "A72 4G", "A92 4G", "Reno 2Z", "Reno 2F", "K7X", "Xiaomi Poco M3 Pro 4G", "Poco M3 Pro 5G", "Redmi Note 10 5G", "Redmi 10", "Redmi 10 Prime", "Note 10 5G", "Note 10T 5G", "Redmi 11 4G (2021)", "Redmi 11SE"],
+    glassType: '',
+    notes: 'From Static Premium Quality packaging'
+  },
+  {
+    id: 'g_seed_11',
+    baseModel: 'Box 11',
+    models: ["1+10R", "1+10T", "Realme GT 2 Pro", "GT Neo3", "1+Ace", "1+Ace Pro", "Vi V27E", "Poco F5 Pro", "iQOO 7 5G", "iQOO 7 (India)", "OP K11", "Note 13 4G", "Realme 14", "Realme P3", "Realme 14T", "1+Nord CE4", "Y200 4G", "Y200 5G", "1+Nord 4", "1+Nord CE4 Lite", "K12", "K50", "K50 Pro", "Poco X5 Pro"],
+    glassType: '',
+    notes: 'From ESD Anti-Static Big Curved Edge packaging'
+  },
+  {
+    id: 'g_seed_12',
+    baseModel: 'Box 12',
+    models: ["OP F11 Pro", "Reno 2Z", "Reno 2F", "Realme X", "Vi V15", "Y30", "Y50", "Y50T", "Y70S", "Y70T", "Y51S 5G", "Z1 Pro", "Redmi Note 9T", "Note 9", "Note 9 5G", "Redmi 10X 4G"],
+    glassType: '',
+    notes: 'From 6D ESD Anti-Static packaging'
+  },
+  {
+    id: 'g_seed_13',
+    baseModel: 'Box 13',
+    models: ["OP A53", "A32", "A33", "A54 4G", "Q3S", "A55 4G", "A36", "A56 4G", "K10", "A53S", "Realme 7i", "Realme 8i", "Realme 9i", "Realme 9 Pro", "Narzo 50", "Realme V25", "C17", "Realme Q5", "1+Nord CE2 Lite", "K10X", "Realme 6 Pro", "X3", "X3 Super Zoom", "X50 5G", "Reno 4Z", "Realme 9 5G", "Realme 9 5G Speed", "1+Nord N100", "A76", "F52", "Hot 9", "Hot 9 Pro", "Spark 5", "Spark 5 Pro", "Spark 7 Pro", "Spark 20C", "Go 2024", "Smart 8", "Tecno Pop 8", "X6525", "Camon 15", "Camon 16s", "Camon 17", "Camon 18 Premier", "G24", "Hot 40i", "Smart 8 HD", "Spark 20", "Smart 8 Plus", "Smart 8 Pro", "G04", "G24 Power"],
+    glassType: '',
+    notes: 'From ESD Anti-Static Big Curved Edge packaging'
+  },
+  {
+    id: 'g_seed_14',
+    baseModel: 'Box 14',
+    models: ["F15", "F17", "Reno 3", "Y73", "V20", "V20SE", "V21E", "V23E", "Y75 4G", "V21E 5G", "T1 44W", "Y73S", "T1", "Y71T", "A73 4G", "Y70", "A91"],
+    glassType: '',
+    notes: 'From HD 2.5D packaging'
+  },
+  {
+    id: 'g_seed_15',
+    baseModel: 'Box 15',
+    models: ["Narzo N53", "Realme C53", "N63", "C61", "Realme C51", "Realme Note 50", "Realme C63", "Realme Note 60", "Note 60X", "F14 5G", "Y19", "M14 4G", "A05S", "Y04", "Y29S", "Y19E"],
+    glassType: '',
+    notes: 'From 5D ESD Anti-Static packaging'
+  },
+  {
+    id: 'g_seed_16',
+    baseModel: 'Box 16',
+    models: ["F21 Pro", "A96 5G", "Realme 7 Pro", "Reno 7 SE 5G", "Reno 9", "Reno 9 Pro+", "Realme 8", "Realme 8 Pro", "1+Nord CE2 5G", "F19", "F19S", "F19 Pro", "F19 Pro+", "Reno 7Z 5G", "Reno 5F", "Realme X7", "Reno 6Z", "Reno 8Z", "Reno 7 5G", "Reno 8 Lite", "Narzo 50 Pro", "F21S Pro", "Reno 8", "Redmi Note 10S", "F17 Pro", "Redmi Note 10", "Note 11 4G", "Note 11S", "Reno 7A", "Reno 5 Lite", "Reno 9 4G", "A93", "A74 4G", "A95 4G", "A95 5G", "A94 4G", "A94 5G", "Reno 6 Lite", "Reno 5Z", "Reno 4se", "Reno 4G", "Poco M4 Pro 4G", "Reno 8T", "M5S", "Realme 10 4G", "Realme 11 5G", "Reno 9A"],
+    glassType: '',
+    notes: 'From HD Anti-Static packaging'
+  },
+  {
+    id: 'g_seed_17',
+    baseModel: 'Box 17',
+    models: ["Moto G60", "Camon 16", "Camon 16 Pro", "Spark 6", "Hot 10", "Hot 12", "Hot 12 Play", "Note 8i", "X683", "Hot 20 Play", "Hot 12 Play NFC", "Pova Neo2", "Note 12i", "Hot 20", "Pova", "Pova 4", "Hot 30 Play NFC", "Hot 30 Play (X6835)", "Moto G60", "G40 Fusion", "G40", "G51 5G"],
+    glassType: '',
+    notes: 'From ESD Anti-Static Edge to Edge packaging'
+  },
+  {
+    id: 'g_seed_18',
+    baseModel: 'Box 18',
+    models: ["Redmi 10C", "Redmi 10", "Mi 12C", "10 Power", "Poco C55", "C40", "C61", "Mi-A3 2024", "A3X"],
+    glassType: '',
+    notes: 'From ESD Anti-Static packaging'
+  },
+  {
+    id: 'g_seed_19',
+    baseModel: 'Box 19',
+    models: ["Redmi 9", "9T", "9 Power", "9 Prime", "Poco M2", "Poco M3", "Note 9 (4G) China", "Vivo Y19", "Y5S", "U20", "U3"],
+    glassType: '',
+    notes: 'From Anti-Static packaging'
+  },
+  {
+    id: 'g_seed_20',
+    baseModel: 'Box 20',
+    models: ["Redmi 14C", "14R", "Poco C75 4G", "Poco C75 5G", "Redmi A3 Pro", "Redmi A4 5G", "Redmi A5", "Poco C71"],
+    glassType: '',
+    notes: 'From Tempered Glass packaging'
+  }
+];
+
+function loadGroups(){
+  try{
+    const raw = localStorage.getItem('glass-groups');
+    groups = raw ? JSON.parse(raw) : SEED_GROUPS.slice();
+  }catch(e){
+    groups = SEED_GROUPS.slice();
+  }
+  SEED_GROUPS.forEach(seed => {
+    const idx = groups.findIndex(g => g.id === seed.id);
+    if(idx >= 0) groups[idx] = seed; else groups.push(seed);
+  });
+  groups.forEach(g => { if(!g.baseModel) g.baseModel = g.models[0]; });
+  saveGroups();
+  renderGroupList();
+  renderResults();
+}
+
+function saveGroups(){
+  try{
+    localStorage.setItem('glass-groups', JSON.stringify(groups));
+  }catch(e){
+    toast('Could not save — try again');
+  }
+}
+
+function normalize(s){
+  return s.trim().toLowerCase().replace(/\s+/g,' ');
+}
+
+function modelMatchesQuery(model, q){
+  const nm = normalize(model);
+  if(nm === q) return true;
+  return nm.split(' ').indexOf(q) !== -1;
+}
+
+function renderResults(){
+  const q = normalize(document.getElementById('searchInput').value);
+  const box = document.getElementById('results');
+  if(q.length < 2){
+    box.innerHTML = '';
+    return;
+  }
+  const matches = groups.filter(g =>
+    g.models.some(m => modelMatchesQuery(m, q))
+  );
+  if(matches.length === 0){
+    box.innerHTML = '<div class="no-match">No compatibility group found for that exact model code yet. Add one below.</div>';
+    return;
+  }
+  box.innerHTML = matches.map(g => {
+    const chips = g.models.map(m => {
+      const isSelf = modelMatchesQuery(m, q);
+      return '<span class="chip ' + (isSelf ? 'self' : '') + '">' + escapeHtml(m) + '</span>';
+    }).join('');
+    const meta = (g.glassType || g.notes)
+      ? '<div class="glass-meta">' + [g.glassType, g.notes].filter(Boolean).map(escapeHtml).join(' — ') + '</div>'
+      : '';
+    return '<div class="answer-card"><span class="spark">match!</span>' +
+      '<p class="answer-label">Take this glass</p>' +
+      '<p class="answer-main">Use <b>' + escapeHtml(g.baseModel) + '</b> glass</p></div>' +
+      '<div class="result-card"><p class="match-label">All models this glass fits</p><div class="chips">' + chips + '</div>' + meta + '</div>';
+  }).join('');
+}
+
+function renderGroupList(){
+  document.getElementById('groupCount').textContent = groups.length;
+  const list = document.getElementById('groupList');
+  if(groups.length === 0){
+    list.innerHTML = '<div class="empty-state">No groups yet. Add your first compatibility group.</div>';
+    return;
+  }
+  list.innerHTML = groups.map(g => {
+    const modelsStr = g.models.map(escapeHtml).join(', ');
+    const glassStr = (g.glassType || g.notes)
+      ? '<div class="group-glass">' + [g.glassType, g.notes].filter(Boolean).map(escapeHtml).join(' — ') + '</div>'
+      : '';
+    return '<div class="group-row">' +
+      '<div><span class="group-base">Stock: ' + escapeHtml(g.baseModel) + '</span><div class="group-models"><b>' + modelsStr + '</b></div>' + glassStr + '</div>' +
+      '<div class="row-actions">' +
+        '<button onclick="startEdit(\'' + g.id + '\')">Edit</button>' +
+        '<button onclick="deleteGroup(\'' + g.id + '\')">Delete</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function showForm(existing){
+  editingId = existing ? existing.id : null;
+  const panel = document.getElementById('formPanel');
+  panel.innerHTML =
+    '<div class="form-panel">' +
+      '<label>Phone models that share this glass (comma separated)</label>' +
+      '<textarea id="modelsInput" rows="2" placeholder="Samsung A14, Samsung A14 5G, Samsung A13">' + (existing ? existing.models.join(', ') : '') + '</textarea>' +
+      '<label>Which model glass do you actually stock/take for this group?</label>' +
+      '<input type="text" id="baseModelInput" placeholder="e.g. Realme 5" value="' + (existing ? escapeHtml(existing.baseModel || '') : '') + '">' +
+      '<p class="form-hint">This is what the search result will tell you to grab.</p>' +
+      '<label>Glass / part type (optional)</label>' +
+      '<input type="text" id="glassTypeInput" placeholder="e.g. OCA glass only, or Glass + digitizer" value="' + (existing ? escapeHtml(existing.glassType || '') : '') + '">' +
+      '<label>Notes (optional)</label>' +
+      '<input type="text" id="notesInput" placeholder="e.g. Frame differs, check camera cutout" value="' + (existing ? escapeHtml(existing.notes || '') : '') + '">' +
+      '<div class="form-actions">' +
+        '<button id="cancelBtn">Cancel</button>' +
+        '<button class="btn-accent" id="saveBtn">' + (existing ? 'Save changes' : 'Add group') + '</button>' +
+      '</div>' +
+    '</div>';
+  document.getElementById('cancelBtn').onclick = hideForm;
+  document.getElementById('saveBtn').onclick = submitForm;
+  panel.scrollIntoView({behavior:'smooth', block:'center'});
+  document.getElementById('modelsInput').focus();
+}
+
+function hideForm(){
+  editingId = null;
+  document.getElementById('formPanel').innerHTML = '';
+}
+
+function submitForm(){
+  const raw = document.getElementById('modelsInput').value;
+  const models = raw.split(',').map(s => s.trim()).filter(Boolean);
+  if(models.length < 2){
+    toast('Add at least two models that share this glass');
+    return;
+  }
+  let baseModel = document.getElementById('baseModelInput').value.trim();
+  if(!baseModel) baseModel = models[0];
+  const glassType = document.getElementById('glassTypeInput').value.trim();
+  const notes = document.getElementById('notesInput').value.trim();
+
+  if(editingId){
+    const g = groups.find(g => g.id === editingId);
+    g.models = models;
+    g.baseModel = baseModel;
+    g.glassType = glassType;
+    g.notes = notes;
+    toast('Group updated');
+  }else{
+    groups.push({
+      id: 'g_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+      models, baseModel, glassType, notes
+    });
+    toast('Group added');
+  }
+  saveGroups();
+  renderGroupList();
+  renderResults();
+  hideForm();
+}
+
+function startEdit(id){
+  const g = groups.find(g => g.id === id);
+  if(g) showForm(g);
+}
+
+function deleteGroup(id){
+  if(!confirm('Delete this compatibility group?')) return;
+  groups = groups.filter(g => g.id !== id);
+  saveGroups();
+  renderGroupList();
+  renderResults();
+  toast('Group deleted');
+}
+
+document.getElementById('addBtn').onclick = () => showForm(null);
+document.getElementById('searchInput').addEventListener('input', renderResults);
+
+window.addEventListener('error', function(e){
+  const banner = document.createElement('div');
+  banner.style.cssText = 'background:#fff;color:#ff5c72;border:3px solid #ff5c72;border-radius:12px;padding:12px 16px;margin-bottom:1rem;font-size:13px;font-weight:600;';
+  banner.textContent = 'Something went wrong: ' + e.message;
+  document.body.insertBefore(banner, document.body.firstChild);
+});
+
+loadGroups();
+</script>
+</body>
+</html>
