@@ -308,6 +308,63 @@
   }
   .toast.show{opacity:1;}
 
+  .gate-overlay{
+    position:fixed;
+    inset:0;
+    background:var(--cream);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:1.5rem;
+    z-index:100;
+  }
+  .gate-card{
+    background:var(--cream-2);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:2rem 1.75rem;
+    max-width:340px;
+    width:100%;
+    text-align:center;
+  }
+  .gate-title{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-weight:800;
+    font-size:24px;
+    color:var(--ink);
+    margin:0 0 6px;
+  }
+  .gate-sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 20px;
+  }
+  .gate-card input{
+    width:100%;
+    background:var(--cream);
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:13px 16px;
+    font-size:15px;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    outline:none;
+    margin-bottom:14px;
+    text-align:center;
+  }
+  .gate-card input:focus{border-color:var(--green);}
+
+  .greeting-banner{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;
+    font-weight:700;
+    font-size:15px;
+    color:#fff;
+    background:var(--clay);
+    border-radius:14px;
+    padding:12px 16px;
+    margin-bottom:1.25rem;
+    text-align:center;
+  }
 </style>
 </head>
 <body>
@@ -497,6 +554,76 @@ const SEED_GROUPS = [
     models: ["Redmi 14C", "14R", "Poco C75 4G", "Poco C75 5G", "Redmi A3 Pro", "Redmi A4 5G", "Redmi A5", "Poco C71"],
     glassType: '',
     notes: 'From Tempered Glass packaging'
+  },
+  {
+    id: 'g_seed_21',
+    baseModel: 'Box 21',
+    models: ["Realme 15X (India)", "Realme C85", "OP A6", "OP A6X", "OP A6S", "Narzo 90X", "Vi Y31D"],
+    glassType: '',
+    notes: 'From uploaded glass packaging photo (Image 1)'
+  },
+  {
+    id: 'g_seed_22',
+    baseModel: 'Box 22',
+    models: ["iQOO 15", "iQOO 15 Ultra", "iQOO Z11", "Vo V70 FE", "Nothing Phone 4A", "Nothing Phone 4A Pro"],
+    glassType: 'Palio Super Max',
+    notes: 'From uploaded glass packaging photo (Image 2)'
+  },
+  {
+    id: 'g_seed_23',
+    baseModel: 'Box 23',
+    models: ["Vo V9", "Vo Y81", "Vo Y83", "Vo Y83 Pro", "Vo Y81S", "Vo Y85", "Vo Z1", "Vo Z3X", "Vo Y89", "Vo V9 Youth", "Vo X21", "OP A3S", "OP A5", "OP F7", "Realme 2", "Realme C1", "1+6"],
+    glassType: '6D Anti-Static 9H Glass Shield',
+    notes: 'From uploaded glass packaging photo (Image 3)'
+  },
+  {
+    id: 'g_seed_24',
+    baseModel: 'Box 24',
+    models: ["Vo Y17", "Vo Y15", "Vo Y12", "Vo Y11 (2019)", "Vo Y3", "Vo Y3S", "Vo U10", "Vo Y12i"],
+    glassType: '',
+    notes: 'From uploaded glass packaging photo (Image 4)'
+  },
+  {
+    id: 'g_seed_25',
+    baseModel: 'Box 25',
+    models: ["Vo Y3", "Vo Y11", "Vo Y12", "Vo Y12i", "Vo Y15", "Vo Y17", "Vo U10"],
+    glassType: 'Cellink 6D ESD Anti Static Glass',
+    notes: 'From uploaded glass packaging photo (Image 5)'
+  },
+  {
+    id: 'g_seed_26',
+    baseModel: 'Box 26',
+    models: ["Sam A31", "Sam A32 4G", "Sam A33 5G", "Sam T2", "Sam M22", "Sam M32 4G", "Sam F22", "iQOO Z6 Pro", "iQOO T1 Pro", "Sam Y100", "Sam Y100A", "Sam A22 4G"],
+    glassType: 'ESD Anti-Static Big Curved Edge Tempered Glass',
+    notes: 'From uploaded glass packaging photo (Image 6)'
+  },
+  {
+    id: 'g_seed_27',
+    baseModel: 'Box 27',
+    models: ["1+10R", "1+10T", "Realme GT 2 Pro", "Realme GT Neo3", "1+Ace", "1+Ace Pro", "Vi V27E", "Poco F5 Pro", "iQOO 7 5G", "iQOO 7 (India)", "OP K11", "Redmi Note 13 4G", "Realme 14", "Realme P3", "Realme 14T", "1+Nord CE 4", "Vo Y200 4G", "Vo Y200 5G", "1+Nord 4", "1+Nord CE 4 Lite", "Redmi K12", "Redmi K50", "Redmi K50 Pro", "Poco X5 Pro"],
+    glassType: 'ESD Anti-Static Big Curved Edge Tempered Glass',
+    notes: 'From uploaded glass packaging photo (Image 7)'
+  },
+  {
+    id: 'g_seed_28',
+    baseModel: 'Box 28',
+    models: ["Realme 10 Pro", "Redmi Note 12 4G", "Redmi Note 12 5G", "Poco X5", "Redmi Note 12R Pro"],
+    glassType: 'ESD Anti-Static Tempered Glass',
+    notes: 'From uploaded glass packaging photo (Image 8)'
+  },
+  {
+    id: 'g_seed_29',
+    baseModel: 'Box 29',
+    models: ["Sam A53 5G", "Sam A52", "Sam S20FE", "Sam A52 5G", "Sam A52S 5G", "Sam A51", "Sam M31S", "Sam S20 FE 5G", "Sam S20 FE 2022", "Sam S20 Lite"],
+    glassType: 'ESD Anti-Static Edge to Edge Big Curved Glass',
+    notes: 'From uploaded glass packaging photo (Image 9)'
+  },
+  {
+    id: 'g_seed_30',
+    baseModel: 'Box 30',
+    models: ["Sam A05", "Sam F05", "Redmi 13C 4G", "Redmi 13C 5G", "Poco C65", "Redmi 13R", "Poco M6 5G", "Sam M05", "Sam A06", "Sam F06", "Sam M06"],
+    glassType: 'Anti-Static Tempered Glass',
+    notes: 'From uploaded glass packaging photo (Image 10)'
   }
 ];
 
